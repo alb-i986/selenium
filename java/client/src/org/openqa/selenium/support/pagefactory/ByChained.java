@@ -49,10 +49,21 @@ public class ByChained extends By implements Serializable {
 
   @Override
   public WebElement findElement(SearchContext context) {
-    List<WebElement> elements = findElements(context);
-    if (elements.isEmpty())
-      throw new NoSuchElementException("Cannot locate an element using " + toString());
-    return elements.get(0);
+    if (bys.length == 0) {
+      throw new NoSuchElementException("No Bys were specified in this " + getClass().getSimpleName());
+    }
+
+    WebElement elem = null;
+    for (By by : bys) {
+      boolean isFirstIteration = elem == null;
+      if (isFirstIteration) {
+        elem = by.findElement(context);
+      } else {
+        elem = elem.findElement(by);
+      }
+    }
+    assert elem != null; // NoSuchElement should have already been thrown
+    return elem;
   }
 
   @Override
