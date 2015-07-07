@@ -17,10 +17,14 @@
 
 package org.openqa.selenium.support.pagefactory;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
@@ -36,10 +40,14 @@ import org.openqa.selenium.internal.FindsByName;
 import org.openqa.selenium.internal.FindsByXPath;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(JUnit4.class)
 public class ByChainedTest {
+
+  private static final List<WebElement> NO_ELEMENTS = Collections.emptyList();
 
   @Test
   public void findElementZeroBy() {
@@ -267,6 +275,46 @@ public class ByChainedTest {
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
     assertThat(by.findElements(driver), equalTo(elems5));
+  }
+
+  @Test
+  public void findElementsThreeBy_firstFindsOne_secondEmpty() {
+    final AllDriver driver = mock(AllDriver.class);
+    final WebElement elem1 = mock(WebElement.class, "webElement1");
+
+    String by1Name = "by1";
+    By by1 = By.name(by1Name);
+    By by2 = By.name("by2");
+    By by3 = By.name("by3");
+
+    when(driver.findElementsByName(by1Name)).thenReturn(Arrays.asList(elem1));
+    when(elem1.findElements(by2)).thenReturn(NO_ELEMENTS);
+
+    ByChained by = new ByChained(by1, by2, by3);
+
+    assertThat(by.findElements(driver), is(empty()));
+    verify(elem1, never()).findElements(by3);
+  }
+
+  @Test
+  public void findElementThreeBy_firstFindsTwo_secondEmpty() {
+    final AllDriver driver = mock(AllDriver.class);
+    final WebElement elem1 = mock(WebElement.class, "webElement1");
+    final WebElement elem2 = mock(WebElement.class, "webElement2");
+
+    String by1Name = "by1";
+    By by1 = By.name(by1Name);
+    By by2 = By.name("by2");
+    By by3 = By.name("by3");
+
+    when(driver.findElementsByName(by1Name)).thenReturn(Arrays.asList(elem1, elem2));
+    when(elem1.findElements(by2)).thenReturn(NO_ELEMENTS);
+    when(elem2.findElements(by2)).thenReturn(NO_ELEMENTS);
+
+    ByChained by = new ByChained(by1, by2, by3);
+
+    assertThat(by.findElements(driver), is(empty()));
+    verify(elem1, never()).findElements(by3);
   }
 
   @Test
