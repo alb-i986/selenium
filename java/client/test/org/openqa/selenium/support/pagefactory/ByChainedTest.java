@@ -17,6 +17,7 @@
 
 package org.openqa.selenium.support.pagefactory;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -39,7 +40,6 @@ import org.openqa.selenium.internal.FindsByLinkText;
 import org.openqa.selenium.internal.FindsByName;
 import org.openqa.selenium.internal.FindsByXPath;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -67,8 +67,7 @@ public class ByChainedTest {
     final AllDriver driver = mock(AllDriver.class);
 
     ByChained by = new ByChained();
-    assertThat(by.findElements(driver),
-        equalTo((List<WebElement>) new ArrayList<WebElement>()));
+    assertThat(by.findElements(driver), is(empty()));
   }
 
   @Test
@@ -87,20 +86,16 @@ public class ByChainedTest {
     final AllDriver driver = mock(AllDriver.class);
     final WebElement elem1 = mock(WebElement.class, "webElement1");
     final WebElement elem2 = mock(WebElement.class, "webElement2");
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems12);
+    when(driver.findElementsByName("cheese")).thenReturn(Arrays.asList(elem1, elem2));
 
     ByChained by = new ByChained(By.name("cheese"));
-    assertThat(by.findElements(driver), equalTo(elems12));
+    assertThat(by.findElements(driver), contains(elem1, elem2));
   }
 
   @Test
   public void findElementOneByEmpty() {
     final AllDriver driver = mock(AllDriver.class);
-    final List<WebElement> elems = new ArrayList<>();
 
     when(driver.findElementByName("cheese")).thenThrow(NoSuchElementException.class);
 
@@ -116,12 +111,11 @@ public class ByChainedTest {
   @Test
   public void findElementsOneByEmpty() {
     final AllDriver driver = mock(AllDriver.class);
-    final List<WebElement> elems = new ArrayList<>();
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems);
+    when(driver.findElementsByName("cheese")).thenReturn(NO_ELEMENTS);
 
     ByChained by = new ByChained(By.name("cheese"));
-    assertThat(by.findElements(driver), equalTo(elems));
+    assertThat(by.findElements(driver), is(empty()));
   }
 
   @Test
@@ -140,24 +134,6 @@ public class ByChainedTest {
   @Test
   public void findElementTwoByEmptyParent() {
     final AllDriver driver = mock(AllDriver.class);
-    final WebElement elem1 = mock(WebElement.class, "webElement1");
-    final WebElement elem2 = mock(AllElement.class, "webElement2");
-    final WebElement elem3 = mock(AllElement.class, "webElement3");
-    final WebElement elem4 = mock(AllElement.class, "webElement4");
-    final WebElement elem5 = mock(AllElement.class, "webElement5");
-
-    final List<WebElement> elems = new ArrayList<>();
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
-    final List<WebElement> elems34 = new ArrayList<>();
-    elems34.add(elem3);
-    elems34.add(elem4);
-    final List<WebElement> elems5 = new ArrayList<>();
-    elems5.add(elem5);
-    final List<WebElement> elems345 = new ArrayList<>();
-    elems345.addAll(elems34);
-    elems345.addAll(elems5);
 
     when(driver.findElementByName("cheese")).thenThrow(NoSuchElementException.class);
 
@@ -173,29 +149,11 @@ public class ByChainedTest {
   @Test
   public void findElementsTwoByEmptyParent() {
     final AllDriver driver = mock(AllDriver.class);
-    final WebElement elem1 = mock(WebElement.class, "webElement1");
-    final WebElement elem2 = mock(AllElement.class, "webElement2");
-    final WebElement elem3 = mock(AllElement.class, "webElement3");
-    final WebElement elem4 = mock(AllElement.class, "webElement4");
-    final WebElement elem5 = mock(AllElement.class, "webElement5");
 
-    final List<WebElement> elems = new ArrayList<>();
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
-    final List<WebElement> elems34 = new ArrayList<>();
-    elems34.add(elem3);
-    elems34.add(elem4);
-    final List<WebElement> elems5 = new ArrayList<>();
-    elems5.add(elem5);
-    final List<WebElement> elems345 = new ArrayList<>();
-    elems345.addAll(elems34);
-    elems345.addAll(elems5);
-
-    when(driver.findElementsByName("cheese")).thenReturn(elems);
+    when(driver.findElementsByName("cheese")).thenReturn(NO_ELEMENTS);
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
-    assertThat(by.findElements(driver), equalTo(elems));
+    assertThat(by.findElements(driver), is(empty()));
   }
 
   @Test
@@ -222,28 +180,13 @@ public class ByChainedTest {
     final WebElement elem1 = mock(WebElement.class, "webElement1");
     final WebElement elem2 = mock(AllElement.class, "webElement2");
     final WebElement elem3 = mock(AllElement.class, "webElement3");
-    final WebElement elem4 = mock(AllElement.class, "webElement4");
-    final WebElement elem5 = mock(AllElement.class, "webElement5");
 
-    final List<WebElement> elems = new ArrayList<>();
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
-    final List<WebElement> elems34 = new ArrayList<>();
-    elems34.add(elem3);
-    elems34.add(elem4);
-    final List<WebElement> elems5 = new ArrayList<>();
-    elems5.add(elem5);
-    final List<WebElement> elems345 = new ArrayList<>();
-    elems345.addAll(elems34);
-    elems345.addAll(elems5);
-
-    when(driver.findElementsByName("cheese")).thenReturn(elems12);
-    when(elem1.findElements(By.name("photo"))).thenReturn(elems);
-    when(elem2.findElements(By.name("photo"))).thenReturn(elems5);
+    when(driver.findElementsByName("cheese")).thenReturn(Arrays.asList(elem1, elem2));
+    when(elem1.findElements(By.name("photo"))).thenReturn(NO_ELEMENTS);
+    when(elem2.findElements(By.name("photo"))).thenReturn(Arrays.asList(elem3));
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
-    assertThat(by.findElements(driver), equalTo(elems5));
+    assertThat(by.findElements(driver), contains(elem3));
   }
 
   @Test
