@@ -62,9 +62,6 @@ public class ByChained extends By implements Serializable {
         elem = elem.findElement(by);
       }
     }
-    if (elem == null) {
-      throw new NoSuchElementException("Cannot locate an element using " + toString());
-    }
     return elem;
   }
 
