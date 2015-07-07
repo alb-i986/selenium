@@ -50,7 +50,7 @@ public class ByChained extends By implements Serializable {
   @Override
   public WebElement findElement(SearchContext context) {
     if (bys.length == 0) {
-      throw new NoSuchElementException("No Bys were specified in this " + getClass().getSimpleName());
+      throw new NoSuchElementException("No Bys were specified in this ByChained");
     }
 
     WebElement elem = null;
