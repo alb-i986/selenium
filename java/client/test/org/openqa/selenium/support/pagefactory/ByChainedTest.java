@@ -75,12 +75,8 @@ public class ByChainedTest {
   public void findElementOneBy() {
     final AllDriver driver = mock(AllDriver.class);
     final WebElement elem1 = mock(WebElement.class, "webElement1");
-    final WebElement elem2 = mock(WebElement.class, "webElement2");
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems12);
+    when(driver.findElementByName("cheese")).thenReturn(elem1);
 
     ByChained by = new ByChained(By.name("cheese"));
     assertThat(by.findElement(driver), equalTo(elem1));
@@ -106,7 +102,7 @@ public class ByChainedTest {
     final AllDriver driver = mock(AllDriver.class);
     final List<WebElement> elems = new ArrayList<>();
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems);
+    when(driver.findElementByName("cheese")).thenThrow(NoSuchElementException.class);
 
     ByChained by = new ByChained(By.name("cheese"));
     try {
@@ -133,27 +129,12 @@ public class ByChainedTest {
     final AllDriver driver = mock(AllDriver.class);
     final WebElement elem1 = mock(AllElement.class, "webElement1");
     final WebElement elem2 = mock(AllElement.class, "webElement2");
-    final WebElement elem3 = mock(AllElement.class, "webElement3");
-    final WebElement elem4 = mock(AllElement.class, "webElement4");
-    final WebElement elem5 = mock(AllElement.class, "webElement5");
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
-    final List<WebElement> elems34 = new ArrayList<>();
-    elems34.add(elem3);
-    elems34.add(elem4);
-    final List<WebElement> elems5 = new ArrayList<>();
-    elems5.add(elem5);
-    final List<WebElement> elems345 = new ArrayList<>();
-    elems345.addAll(elems34);
-    elems345.addAll(elems5);
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems12);
-    when(elem1.findElements(By.name("photo"))).thenReturn(elems34);
-    when(elem2.findElements(By.name("photo"))).thenReturn(elems5);
+    when(driver.findElementByName("cheese")).thenReturn(elem1);
+    when(elem1.findElement(By.name("photo"))).thenReturn(elem2);
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
-    assertThat(by.findElement(driver), equalTo(elem3));
+    assertThat(by.findElement(driver), equalTo(elem2));
   }
 
   @Test
@@ -178,7 +159,7 @@ public class ByChainedTest {
     elems345.addAll(elems34);
     elems345.addAll(elems5);
 
-    when(driver.findElementsByName("cheese")).thenReturn(elems);
+    when(driver.findElementByName("cheese")).thenThrow(NoSuchElementException.class);
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
     try {
@@ -221,30 +202,18 @@ public class ByChainedTest {
   public void findElementTwoByEmptyChild() {
     final AllDriver driver = mock(AllDriver.class);
     final WebElement elem1 = mock(WebElement.class, "webElement1");
-    final WebElement elem2 = mock(AllElement.class, "webElement2");
-    final WebElement elem3 = mock(AllElement.class, "webElement3");
-    final WebElement elem4 = mock(AllElement.class, "webElement4");
-    final WebElement elem5 = mock(AllElement.class, "webElement5");
 
-    final List<WebElement> elems = new ArrayList<>();
-    final List<WebElement> elems12 = new ArrayList<>();
-    elems12.add(elem1);
-    elems12.add(elem2);
-    final List<WebElement> elems34 = new ArrayList<>();
-    elems34.add(elem3);
-    elems34.add(elem4);
-    final List<WebElement> elems5 = new ArrayList<>();
-    elems5.add(elem5);
-    final List<WebElement> elems345 = new ArrayList<>();
-    elems345.addAll(elems34);
-    elems345.addAll(elems5);
-
-    when(driver.findElementsByName("cheese")).thenReturn(elems12);
-    when(elem1.findElements(By.name("photo"))).thenReturn(elems);
-    when(elem2.findElements(By.name("photo"))).thenReturn(elems5);
+    when(driver.findElementByName("cheese")).thenReturn(elem1);
+    when(elem1.findElement(By.name("photo"))).thenThrow(NoSuchElementException.class);
 
     ByChained by = new ByChained(By.name("cheese"), By.name("photo"));
-    assertThat(by.findElement(driver), equalTo(elem5));
+
+    try {
+      by.findElement(driver);
+      fail("Expected NoSuchElementException!");
+    } catch (NoSuchElementException e) {
+      // Expected
+    }
   }
 
   @Test
