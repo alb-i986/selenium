@@ -55,7 +55,7 @@ public class ByChained extends By implements Serializable {
     
     WebElement elem;
     try {
-      elem = bys[0].findElement(context);
+      elem = context.findElement(bys[0]);
       for (int i = 1; i < bys.length; i++) {
         elem = elem.findElement(bys[i]);
       }
@@ -71,7 +71,7 @@ public class ByChained extends By implements Serializable {
       return new ArrayList<>();
     }
 
-    List<WebElement> elems = bys[0].findElements(context);
+    List<WebElement> elems = context.findElements(bys[0]);
     for (int i = 1; i < bys.length; i++) {
       if (elems.isEmpty()) {
         break; // if any one of the bys finds no elements, then return no elements
