@@ -53,15 +53,10 @@ public class ByChained extends By implements Serializable {
       throw new NoSuchElementException("No Bys were specified in this ByChained");
     }
 
-    WebElement elem = null;
-    for (By by : bys) {
-      boolean isFirstIteration = elem == null;
+    WebElement elem = bys[0].findElement(context);
+    for (int i = 1; i < bys.length; i++) {
       try {
-        if (isFirstIteration) {
-          elem = by.findElement(context);
-        } else {
-          elem = elem.findElement(by);
-        }
+        elem = elem.findElement(bys[i]);
       } catch (NoSuchElementException e) {
         throw new NoSuchElementException("Cannot locate an element using " + toString(), e);
       }
