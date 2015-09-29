@@ -53,3 +53,12 @@ java_library(name = "wait",
     "//java/client/src/org/openqa/selenium/remote:remote",
     "//third_party/java/guava-libraries",
   ])
+
+java_library(name = "windows",
+  srcs = [
+    "WindowHandler.java",
+    "IllegalWindowsStateException.java",
+  ],
+  deps = [
+    "//java/client/src/org/openqa/selenium:webdriver-api",
+  ])
