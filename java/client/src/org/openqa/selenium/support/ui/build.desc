@@ -62,4 +62,5 @@ java_library(name = "windows",
   ],
   deps = [
     "//java/client/src/org/openqa/selenium:webdriver-api",
+    "//third_party/java/guava-libraries",
   ])
