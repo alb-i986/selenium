@@ -27,14 +27,17 @@ import java.util.Set;
 
 /**
  * A simple handler of windows, able to manage the life cycle of a single new window.
- * <p>
- * On instantiation, it records the windows currently open.
- * Then, on {@link #switchToNewWindow()}, it expects to find exactly one new
- * window open, and switches to it.
- * Finally, on {@link #close()} the window previously discovered is closed, and the driver is
- * switched back to the initial window or to the window which was active before closing.
- * <p>
- * Example:
+ * <p/>
+ * On instantiation, record the windows currently open.
+ * Then, on {@link #switchToNewWindow()}, expect to find exactly one new window open, and switch to it.
+ * Optionally, it is possible to {@link #switchBack()} to the initial window, and then again to the
+ * new window.
+ * Finally, on {@link #close()} the new window is closed, and the driver is switched back to the
+ * window which was active before closing (which may or may not be the initial window).
+ * <p/>
+ * As an {@link AutoCloseable}, it can be used in a
+ * <a href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">
+ * try-with-resources statement</a>. Example:
  *
  * <pre>{@code
  *   try (WindowHandler wh = new WindowHandler(driver)) {
@@ -47,12 +50,12 @@ import java.util.Set;
 public class WindowHandler implements AutoCloseable {
 
   private final WebDriver driver;
-  private Set<String> initialWindows;
-  private String initialWindow;
+  private final Set<String> initialWindows;
+  private final String initialWindow;
   private String theNewWindow;
 
   /**
-   * Record the current state of open windows.
+   * Record the current state of the open windows.
    */
   public WindowHandler(WebDriver driver) {
     checkNotNull(driver);
@@ -62,21 +65,22 @@ public class WindowHandler implements AutoCloseable {
   }
 
   /**
-   * Switch to <i>the</i> new window that opened up.
+   * Switch to <i>the</i> new window that was opened.
    *
    * @throws NoSuchWindowException if no new window is present
-   * @throws IllegalWindowsStateException if more than one new window was opened since instantiation,
-   *         in which case we wouldn't know where to switch to
+   * @throws IllegalWindowsStateException if more than one new window is found since instantiation
    */
   public void switchToNewWindow() {
-    Set<String> newWindows = newWindows();
-    if (newWindows.size() == 0) {
-      throw new NoSuchWindowException("No new window present");
-    } else if (newWindows.size() > 1) {
-      throw new IllegalWindowsStateException("Cannot switch: too many new windows present");
+    if (theNewWindow == null) {
+      Set<String> newWindows = newWindows();
+      if (newWindows.size() == 0) {
+        throw new NoSuchWindowException("No new window present");
+      } else if (newWindows.size() > 1) {
+        throw new IllegalWindowsStateException(
+          String.format("Cannot switch: too many new windows present (%d)", newWindows.size()));
+      }
+      theNewWindow = newWindows.iterator().next();
     }
-
-    theNewWindow = newWindows.iterator().next();
     driver.switchTo().window(theNewWindow);
   }
 
@@ -87,17 +91,22 @@ public class WindowHandler implements AutoCloseable {
   }
 
   /**
-   * Close the new window we previously discovered and switched to.
-   * If it is currently the active window, close it and then switch back to the initial window.
-   * Otherwise, first switch to it, close it, and finally switch back to the
-   * window that was active right before this call.
-   * <p/>
-   * Warning: the operation is not atomic, therefore it might fail under particular circumstances.
+   * Switch to the initial window.
+   */
+  public void switchBack() {
+    driver.switchTo().window(initialWindow);
+  }
+
+  /**
+   * Close the new window that was previously discovered.
+   * If that is currently the active window, close it and then switch back to the initial window.
+   * Otherwise, first switch to it, close it, and finally switch back to the window that was active
+   * right before calling this method.
    */
   @Override
   public void close() throws Exception {
     if (theNewWindow == null || !isWindowOpen(theNewWindow)) {
-      return; // never opened or already closed
+      return; // never switched or already closed
     }
 
     if (isOnWindow(theNewWindow)) {
@@ -119,4 +128,5 @@ public class WindowHandler implements AutoCloseable {
   private boolean isOnWindow(String window) {
     return driver.getWindowHandle().equals(window);
   }
+
 }
