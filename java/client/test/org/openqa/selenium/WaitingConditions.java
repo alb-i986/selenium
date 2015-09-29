@@ -204,6 +204,31 @@ public class WaitingConditions {
 
   }
 
+  public static ExpectedCondition<String> newWindowsAreOpened(final int numberOfNewWindowsToWaitFor, final Set<String> originalHandles) {
+    if (numberOfNewWindowsToWaitFor < 0) {
+      throw new IllegalStateException("The number of windows to wait for should be positive.");
+    }
+    return new ExpectedCondition<String>() {
+
+      @Override
+      public String apply(WebDriver driver) {
+        Set<String> newWindowHandles = driver.getWindowHandles();
+        newWindowHandles.removeAll(originalHandles);
+        if (newWindowHandles.size() == numberOfNewWindowsToWaitFor) {
+          return newWindowHandles.iterator().next();
+        } else {
+          return null;
+        }
+      }
+
+      @Override
+      public String toString() {
+        return numberOfNewWindowsToWaitFor + " new windows to be opened";
+      }
+    };
+
+  }
+
   public static ExpectedCondition<WebDriver> windowToBeSwitchedToWithName(final String windowName) {
     return new ExpectedCondition<WebDriver>() {
 
