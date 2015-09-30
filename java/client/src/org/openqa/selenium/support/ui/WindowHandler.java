@@ -18,11 +18,11 @@
 package org.openqa.selenium.support.ui;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.openqa.selenium.support.ui.ExpectedConditions.newWindowsToBeOpened;
 
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -67,27 +67,37 @@ public class WindowHandler implements AutoCloseable {
   /**
    * Switch to <i>the</i> new window that was opened.
    *
+   * @see #switchToNewWindow(long)
+   */
+  public void switchToNewWindow() {
+    switchToNewWindow(0);
+  }
+
+  /**
+   * Wait until <i>the</i> new window is open and switch to it.
+   *
+   * @param timeOutInSeconds time to wait for the new window to open
+   *
    * @throws NoSuchWindowException if no new window is present
    * @throws IllegalWindowsStateException if more than one new window is found since instantiation
    */
-  public void switchToNewWindow() {
+  public void switchToNewWindow(long timeOutInSeconds) {
     if (theNewWindow == null) {
-      Set<String> newWindows = newWindows();
-      if (newWindows.size() == 0) {
-        throw new NoSuchWindowException("No new window present");
-      } else if (newWindows.size() > 1) {
-        throw new IllegalWindowsStateException(
-          String.format("Cannot switch: too many new windows present (%d)", newWindows.size()));
-      }
-      theNewWindow = newWindows.iterator().next();
+      theNewWindow = findTheNewWindow(timeOutInSeconds);
     }
     driver.switchTo().window(theNewWindow);
   }
 
-  private Set<String> newWindows() {
-    Set<String> newWindows = new HashSet<>(driver.getWindowHandles());
-    newWindows.removeAll(initialWindows);
-    return newWindows;
+  private String findTheNewWindow(long timeOutInSeconds) {
+    Set<String> newWindows = new WebDriverWait(driver, timeOutInSeconds)
+      .until(newWindowsToBeOpened(initialWindows));
+    if (newWindows.size() == 0) {
+      throw new NoSuchWindowException("No new window present");
+    } else if (newWindows.size() > 1) {
+      throw new IllegalWindowsStateException(
+        String.format("Cannot switch: too many new windows present (%d)", newWindows.size()));
+    }
+    return newWindows.iterator().next();
   }
 
   /**

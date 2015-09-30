@@ -29,6 +29,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -845,6 +846,29 @@ public class ExpectedConditions {
         return "alert to be present";
       }
     };
+  }
+
+  public static ExpectedCondition<Set<String>> newWindowsToBeOpened(
+    final Set<String> originalHandles) {
+    return new ExpectedCondition<Set<String>>() {
+
+      @Override
+      public Set<String> apply(WebDriver driver) {
+        Set<String> newWindows = driver.getWindowHandles();
+        newWindows.removeAll(originalHandles);
+        if (!newWindows.isEmpty()) {
+          return newWindows;
+        } else {
+          return null;
+        }
+      }
+
+      @Override
+      public String toString() {
+        return "any number of new windows to be opened";
+      }
+    };
+
   }
 
   /**
