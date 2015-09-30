@@ -17,12 +17,7 @@
 
 package org.openqa.selenium;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +26,6 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 import static org.openqa.selenium.Platform.ANDROID;
 import static org.openqa.selenium.WaitingConditions.newWindowIsOpened;
-import static org.openqa.selenium.WaitingConditions.newWindowsAreOpened;
 import static org.openqa.selenium.WaitingConditions.windowHandleCountToBe;
 import static org.openqa.selenium.WaitingConditions.windowHandleCountToBeGreaterThan;
 import static org.openqa.selenium.support.ui.ExpectedConditions.alertIsPresent;
@@ -44,8 +38,6 @@ import com.google.common.collect.Sets;
 
 import org.junit.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.IllegalWindowsStateException;
-import org.openqa.selenium.support.ui.WindowHandler;
 import org.openqa.selenium.testing.Ignore;
 import org.openqa.selenium.testing.JUnit4TestBase;
 import org.openqa.selenium.testing.JavascriptEnabled;
@@ -393,70 +385,6 @@ public class WindowSwitchingTest extends JUnit4TestBase {
     driver.switchTo().window(mainWindow);
 
     driver.findElement(By.name("myframe"));
-  }
-
-  @NeedsFreshDriver
-  @NoDriverAfterTest
-  @Test
-  @Ignore(MARIONETTE)
-  public void testWindowHandler() throws Exception {
-    driver.get(appServer.whereIs("window_switching_tests/page_with_frame.html"));
-
-    WindowHandler sut = new WindowHandler(driver);
-
-    Set<String> initialWindowHandles = driver.getWindowHandles();
-    driver.findElement(By.id("a-link-that-opens-a-new-window")).click();
-    wait.until(newWindowIsOpened(initialWindowHandles));
-
-    sut.switchToNewWindow();
-    assertThat(driver.getTitle(), containsString("Simple Page"));
-    String theNewWindow = driver.getWindowHandle();
-
-    sut.close();
-    assertThat(driver.getWindowHandles(), hasSize(initialWindowHandles.size()));
-    assertThat(driver.getTitle(), containsString("WindowSwitchingTest"));
-    assertThat(driver.getWindowHandles(), not(hasItem(theNewWindow)));
-  }
-
-  @NeedsFreshDriver
-  @NoDriverAfterTest
-  @Test(expected = IllegalWindowsStateException.class)
-  @Ignore(MARIONETTE)
-  public void testWindowHandlerGivenTwoNewWindows() {
-    driver.get(appServer.whereIs("window_switching_tests/page_with_frame.html"));
-
-    WindowHandler sut = new WindowHandler(driver);
-
-    WebElement link = driver.findElement(By.id("a-link-that-opens-a-blank-window"));
-    Set<String> initialWindowHandles = driver.getWindowHandles();
-    link.click();
-    link.click();
-    wait.until(newWindowsAreOpened(2, initialWindowHandles));
-
-    // when
-    sut.switchToNewWindow();
-
-    // then exception is thrown
-  }
-
-  @NeedsFreshDriver
-  @NoDriverAfterTest
-  @Test
-  @Ignore(MARIONETTE)
-  public void testWindowHandlerWhenNoSwitchCloseShouldFail() throws Exception {
-    driver.get(appServer.whereIs("window_switching_tests/page_with_frame.html"));
-
-    WindowHandler sut = new WindowHandler(driver);
-
-    // when
-    sut.close();
-
-    // then nop
-  }
-
-  @Test
-  public void windowHandlerShouldBeAutoCloseable() throws Exception {
-    assertThat(WindowHandler.class, instanceOf(AutoCloseable.class));
   }
 
 }

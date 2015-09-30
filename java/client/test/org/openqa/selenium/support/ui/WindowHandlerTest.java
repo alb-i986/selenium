@@ -17,6 +17,8 @@
 
 package org.openqa.selenium.support.ui;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -49,6 +51,11 @@ public class WindowHandlerTest {
 
     // then do nothing
     verifyNoMoreInteractions(mockDriver);
+  }
+
+  @Test
+  public void shouldBeAutoCloseable() {
+    assertThat(WindowHandler.class, instanceOf(AutoCloseable.class));
   }
 }
 
