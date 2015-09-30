@@ -61,6 +61,7 @@ java_library(name = "windows",
     "IllegalWindowsStateException.java",
   ],
   deps = [
+    ":wait",
     "//java/client/src/org/openqa/selenium:webdriver-api",
     "//third_party/java/guava-libraries",
   ])
