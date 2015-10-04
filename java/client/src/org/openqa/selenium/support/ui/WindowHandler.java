@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.openqa.selenium.support.ui.ExpectedConditions.newWindowsToBeOpened;
 
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Set;
@@ -52,7 +53,7 @@ public class WindowHandler implements AutoCloseable {
   private final WebDriver driver;
   private final Set<String> initialWindows;
   private final String initialWindow;
-  private String theNewWindow;
+  protected String theNewWindow;
 
   /**
    * Record the current state of the open windows.
@@ -65,7 +66,7 @@ public class WindowHandler implements AutoCloseable {
   }
 
   /**
-   * Switch to <i>the</i> new window that was opened.
+   * Switch to <i>the</i> new window that has just opened.
    *
    * @see #switchToNewWindow(long)
    */
@@ -76,32 +77,35 @@ public class WindowHandler implements AutoCloseable {
   /**
    * Wait until <i>the</i> new window is open and switch to it.
    *
-   * @param timeOutInSeconds time to wait for the new window to open
+   * @param timeOutInSeconds time to wait for the new window to open up
    *
-   * @throws NoSuchWindowException if no new window is present
-   * @throws IllegalWindowsStateException if more than one new window is found since instantiation
+   * @throws NoSuchWindowException if no new window is present within the given number of seconds
+   * @throws IllegalWindowsStateException if multiple new windows are found
    */
   public void switchToNewWindow(long timeOutInSeconds) {
     if (theNewWindow == null) {
-      theNewWindow = findTheNewWindow(timeOutInSeconds);
+      theNewWindow = waitForTheNewWindow(timeOutInSeconds);
     }
     driver.switchTo().window(theNewWindow);
   }
 
-  private String findTheNewWindow(long timeOutInSeconds) {
-    Set<String> newWindows = new WebDriverWait(driver, timeOutInSeconds)
-      .until(newWindowsToBeOpened(initialWindows));
-    if (newWindows.size() == 0) {
-      throw new NoSuchWindowException("No new window present");
-    } else if (newWindows.size() > 1) {
+  private String waitForTheNewWindow(long timeOutInSeconds) {
+    Set<String> newWindows;
+    try {
+      newWindows = new WebDriverWait(driver, timeOutInSeconds)
+        .until(newWindowsToBeOpened(initialWindows));
+    } catch (TimeoutException e) {
+      throw new NoSuchWindowException("Cannot switch: no new window present");
+    }
+    if (newWindows.size() > 1) {
       throw new IllegalWindowsStateException(
-        String.format("Cannot switch: too many new windows present (%d)", newWindows.size()));
+        String.format("Cannot switch: too many new windows are present (%d)", newWindows.size()));
     }
     return newWindows.iterator().next();
   }
 
   /**
-   * Switch to the initial window.
+   * Switch to the initial window found on instantiation.
    */
   public void switchBack() {
     driver.switchTo().window(initialWindow);
