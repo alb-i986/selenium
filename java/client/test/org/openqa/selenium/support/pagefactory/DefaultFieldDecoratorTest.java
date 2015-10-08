@@ -46,6 +46,7 @@ import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -58,6 +59,7 @@ public class DefaultFieldDecoratorTest {
   // Unusued fields are used by tests. Do not remove!
   @SuppressWarnings("unused") private WebElement element1;
   @SuppressWarnings("unused") private WebElement element2;
+  @SuppressWarnings("unused") private Select select;
   @SuppressWarnings("unused") private List<WebElement> list1;
   @SuppressWarnings("unused") private List<Object> list2;
   @SuppressWarnings("unused") private Integer num;
@@ -108,6 +110,14 @@ public class DefaultFieldDecoratorTest {
     assertThat(decorator.decorate(getClass().getClassLoader(),
         getClass().getDeclaredField("element2")),
         is(notNullValue()));
+  }
+
+  @Test
+  public void decoratesSelect() throws Exception {
+    FieldDecorator decorator = createDecoratorWithDefaultLocator();
+    assertThat(decorator.decorate(getClass().getClassLoader(),
+                                  getClass().getDeclaredField("select")),
+               is(notNullValue()));
   }
 
   @Test

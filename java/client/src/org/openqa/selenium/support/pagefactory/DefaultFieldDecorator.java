@@ -25,6 +25,8 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.pagefactory.internal.LocatingElementHandler;
 import org.openqa.selenium.support.pagefactory.internal.LocatingElementListHandler;
+import org.openqa.selenium.support.pagefactory.internal.LocatingSelectElementHandler;
+import org.openqa.selenium.support.ui.Select;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -49,6 +51,7 @@ public class DefaultFieldDecorator implements FieldDecorator {
 
   public Object decorate(ClassLoader loader, Field field) {
     if (!(WebElement.class.isAssignableFrom(field.getType())
+          || Select.class.isAssignableFrom(field.getType())
           || isDecoratableList(field))) {
       return null;
     }
@@ -60,6 +63,8 @@ public class DefaultFieldDecorator implements FieldDecorator {
 
     if (WebElement.class.isAssignableFrom(field.getType())) {
       return proxyForLocator(loader, locator);
+    } else if (Select.class.isAssignableFrom(field.getType())) {
+      return proxyForSelectLocator(loader, locator);
     } else if (List.class.isAssignableFrom(field.getType())) {
       return proxyForListLocator(loader, locator);
     } else {
@@ -101,6 +106,11 @@ public class DefaultFieldDecorator implements FieldDecorator {
     proxy = (WebElement) Proxy.newProxyInstance(
         loader, new Class[]{WebElement.class, WrapsElement.class, Locatable.class}, handler);
     return proxy;
+  }
+
+  protected Select proxyForSelectLocator(ClassLoader loader, ElementLocator locator) {
+    return (Select) Proxy.newProxyInstance(
+      loader, new Class[]{Select.class}, new LocatingSelectElementHandler(locator));
   }
 
   @SuppressWarnings("unchecked")
