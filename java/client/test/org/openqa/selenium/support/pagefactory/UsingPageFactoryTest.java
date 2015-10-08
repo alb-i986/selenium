@@ -34,6 +34,7 @@ import org.openqa.selenium.support.ByIdOrName;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ISelect;
 import org.openqa.selenium.testing.JUnit4TestBase;
 import org.openqa.selenium.testing.JavascriptEnabled;
 
@@ -69,6 +70,17 @@ public class UsingPageFactoryTest extends JUnit4TestBase {
   }
 
   @Test
+  public void canSelectValueInDecoratedSelectElement() {
+    driver.get(pages.selectPage);
+    SelectPage page = new SelectPage();
+    PageFactory.initElements(driver, page);
+
+    page.select.selectByValue("two");
+
+    assertThat(page.select.getFirstSelectedOption().getText(), equalTo("two"));
+  }
+
+  @Test
   public void testDecoratedElementsShouldBeUnwrapped() {
     final RemoteWebElement element = new RemoteWebElement();
     element.setId("foo");
@@ -97,5 +109,10 @@ public class UsingPageFactoryTest extends JUnit4TestBase {
     @FindBy(tagName = "div")
     @CacheLookup
     List<WebElement> divs;
+  }
+
+  public static class SelectPage {
+    @FindBy(id = "selectWithoutMultiple")
+    ISelect select;
   }
 }
