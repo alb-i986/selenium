@@ -19,6 +19,7 @@ package org.openqa.selenium.support;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -33,8 +34,11 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import org.openqa.selenium.support.pagefactory.FieldDecorator;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.ISelect;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.TickingClock;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -118,6 +122,15 @@ public class PageFactoryTest {
     }, page);
 
     assertThat(page.q, equalTo(q));
+  }
+
+  @Test
+  public void shouldDecorateSelectElements() {
+    PageWithSelectElement page = new PageWithSelectElement();
+
+    PageFactory.initElements(driver, page);
+
+    assertThat(page.select, is(not(nullValue())));
   }
 
   @Test
@@ -263,5 +276,11 @@ public class PageFactoryTest {
   public static class NonWebElementsPage {
 
     public Integer num;
+  }
+
+  public static class PageWithSelectElement {
+
+    @FindBy(id = "select")
+    private ISelect select;
   }
 }
