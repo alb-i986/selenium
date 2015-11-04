@@ -19,9 +19,7 @@ package org.openqa.selenium.logging;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assume.assumeTrue;
 import static org.junit.Assume.assumeFalse;
-
 import static org.openqa.selenium.testing.Ignore.Driver.HTMLUNIT;
 import static org.openqa.selenium.testing.Ignore.Driver.IE;
 import static org.openqa.selenium.testing.Ignore.Driver.MARIONETTE;
@@ -64,7 +62,7 @@ public class GetLogsTest extends JUnit4TestBase {
     for (String logType : logTypes) {
       driver.get(pages.simpleTestPage);
       LogEntries firstEntries = driver.manage().logs().get(logType);
-      assumeTrue(firstEntries.getAll().size() > 0);
+      assumeFalse(firstEntries.getAll().isEmpty());
       LogEntries secondEntries = driver.manage().logs().get(logType);
       assertFalse(String.format("There should be no overlapping log entries in " +
           "consecutive get log calls for %s logs", logType),

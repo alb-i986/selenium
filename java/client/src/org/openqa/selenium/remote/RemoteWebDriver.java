@@ -947,11 +947,11 @@ public class RemoteWebDriver implements WebDriver, JavascriptExecutor,
       String name = frameName.replaceAll("(['\"\\\\#.:;,!?+<>=~*^$|%&@`{}\\-/\\[\\]\\(\\)])", "\\\\$1");
       List<WebElement> frameElements = RemoteWebDriver.this.findElements(
           By.cssSelector("frame[name='" + name + "'],iframe[name='" + name + "']"));
-      if (frameElements.size() == 0) {
+      if (frameElements.isEmpty()) {
         frameElements = RemoteWebDriver.this.findElements(
             By.cssSelector("frame#" + name + ",iframe#" + name));
       }
-      if (frameElements.size() == 0) {
+      if (frameElements.isEmpty()) {
         throw new NoSuchFrameException("No frame element found by name or id " + frameName);
       }
       return frame(frameElements.get(0));

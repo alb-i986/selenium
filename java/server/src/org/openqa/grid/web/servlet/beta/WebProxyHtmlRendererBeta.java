@@ -201,7 +201,7 @@ public class WebProxyHtmlRendererBeta implements HtmlRenderer {
    */
   public static String getPlatform(RemoteProxy proxy) {
     Platform res = null;
-    if (proxy.getTestSlots().size() == 0) {
+    if (proxy.getTestSlots().isEmpty()) {
       return "Unknown";
     } else {
       res = getPlatform(proxy.getTestSlots().get(0));

@@ -196,7 +196,7 @@ public class AjaxElementLocator extends DefaultElementLocator {
     protected void isLoaded() throws Error {
       try {
         elements = AjaxElementLocator.super.findElements();
-        if (elements.size() == 0) {
+        if (elements.isEmpty()) {
           throw new NoSuchElementException("Unable to locate the element");
         }
         for (WebElement element : elements) {

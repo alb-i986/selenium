@@ -785,7 +785,7 @@ public class HtmlUnitWebElement implements WrapsDriver,
       throw new NoSuchElementException(
           "Unable to find element with linkText " + linkText);
     }
-    return elements.size() > 0 ? elements.get(0) : null;
+    return !elements.isEmpty() ? elements.get(0) : null;
   }
 
   @Override

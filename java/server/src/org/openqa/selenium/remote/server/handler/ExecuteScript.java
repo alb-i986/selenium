@@ -50,7 +50,7 @@ public class ExecuteScript extends WebDriverHandler<Object> implements JsonParam
   @Override
   public Object call() throws Exception {
     Object value;
-    if (args.size() > 0) {
+    if (!args.isEmpty()) {
       value = ((JavascriptExecutor) getDriver()).executeScript(script, args.toArray());
     } else {
       value = ((JavascriptExecutor) getDriver()).executeScript(script);

@@ -19,6 +19,7 @@
 package org.openqa.selenium.server.browserlaunchers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -298,7 +299,7 @@ public class MacProxyManagerUnitTest {
   public void testRestoreBackupNotReady() {
     mmpm.restoreNetworkSettings();
     assertTrue("Not supposed to call networksetup when the backup isn't ready: " +
-        mmpm.networkSetupCalls, mmpm.networkSetupCalls.size() == 0);
+        mmpm.networkSetupCalls, mmpm.networkSetupCalls.isEmpty());
     assertEquals("wrong backupready", null, mmpm.mockPrefs.internalPrefs.get("backupready"));
   }
 
@@ -489,7 +490,7 @@ public class MacProxyManagerUnitTest {
 
   private List<String> assertNetworkSetupCall(String command) {
     for (List<String> call : mmpm.networkSetupCalls) {
-      assertTrue("called networksetup with no arguments", call.size() > 0);
+      assertFalse("called networksetup with no arguments", call.isEmpty());
       if (command.equals(call.get(0))) {
         return call;
       }

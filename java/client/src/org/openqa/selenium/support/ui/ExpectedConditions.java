@@ -234,7 +234,7 @@ public class ExpectedConditions {
             return null;
           }
         }
-        return elements.size() > 0 ? elements : null;
+        return !elements.isEmpty() ? elements : null;
       }
 
       @Override
@@ -262,7 +262,7 @@ public class ExpectedConditions {
             return null;
           }
         }
-        return elements.size() > 0 ? elements : null;
+        return !elements.isEmpty() ? elements : null;
       }
 
       @Override
@@ -315,7 +315,7 @@ public class ExpectedConditions {
       @Override
       public List<WebElement> apply(WebDriver driver) {
         List<WebElement> elements = findElements(locator, driver);
-        return elements.size() > 0 ? elements : null;
+        return !elements.isEmpty() ? elements : null;
       }
 
       @Override

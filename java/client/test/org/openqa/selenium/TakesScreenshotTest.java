@@ -469,7 +469,7 @@ public class TakesScreenshotTest extends JUnit4TestBase {
       fail("Unable to get actual colors from screenshot: " + e.getMessage());
     }
 
-    assertTrue(colors.size() > 0);
+    assertFalse(colors.isEmpty());
 
     return colors;
   }

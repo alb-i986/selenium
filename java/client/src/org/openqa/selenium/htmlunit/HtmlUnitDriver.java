@@ -451,7 +451,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
     proxyConfig = new ProxyConfig();
     proxyConfig.setProxyHost(host);
     proxyConfig.setProxyPort(port);
-    if (noProxyHosts != null && noProxyHosts.size() > 0) {
+    if (noProxyHosts != null && !noProxyHosts.isEmpty()) {
       for (String noProxyHost : noProxyHosts) {
         proxyConfig.addHostsToProxyBypass(noProxyHost);
       }
@@ -481,7 +481,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
     proxyConfig.setProxyHost(host);
     proxyConfig.setProxyPort(port);
     proxyConfig.setSocksProxy(true);
-    if (noProxyHosts != null && noProxyHosts.size() > 0) {
+    if (noProxyHosts != null && !noProxyHosts.isEmpty()) {
       for (String noProxyHost : noProxyHosts) {
         proxyConfig.addHostsToProxyBypass(noProxyHost);
       }
@@ -638,7 +638,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
         alert.close();
         ((TopLevelWindow) thisWindow.getTopWindow()).close();
       }
-      if (getWebClient().getWebWindows().size() == 0) {
+      if (getWebClient().getWebWindows().isEmpty()) {
         quit();
       }
     }

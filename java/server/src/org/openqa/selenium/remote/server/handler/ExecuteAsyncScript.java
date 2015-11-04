@@ -52,7 +52,7 @@ public class ExecuteAsyncScript extends WebDriverHandler<Object>
   public Object call() throws Exception {
 
     Object value;
-    if (args.size() > 0) {
+    if (!args.isEmpty()) {
       value = ((JavascriptExecutor) getDriver()).executeAsyncScript(script, args.toArray());
     } else {
       value = ((JavascriptExecutor) getDriver()).executeAsyncScript(script);
