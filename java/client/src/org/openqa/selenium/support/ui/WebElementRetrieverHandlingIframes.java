@@ -24,11 +24,17 @@ public class WebElementRetrieverHandlingIframes extends WebElementRetrieverDecor
   private final WebDriver driver;
 
   /**
-   * By default, uses {@link BasicWebElementRetriever} as the underlying retriever to find element on an iframe.
+   * By default, uses {@link BasicWebElementRetriever} as the underlying retriever
+   * to find elements on a single iframe.
    */
   public WebElementRetrieverHandlingIframes(WebDriver driver) {
     super(new BasicWebElementRetriever(driver));
     this.driver = driver;
+  }
+
+  public WebElementRetrieverHandlingIframes(WebElementRetriever retriever) {
+    super(retriever);
+    this.driver = retriever.getDriver();
   }
 
   @Override

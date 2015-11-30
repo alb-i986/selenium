@@ -11,8 +11,15 @@ import org.openqa.selenium.WebElement;
  */
 public class DisplayedWebElementRetriever extends WebElementRetrieverDecorator {
 
-  protected DisplayedWebElementRetriever(WebElementRetrieverHandlingIframes retriever) {
+  public DisplayedWebElementRetriever(WebElementRetriever retriever) {
     super(retriever);
+  }
+
+  /**
+   * By default, decorate a {@link BasicWebElementRetriever}.
+   */
+  public DisplayedWebElementRetriever(WebDriver driver) {
+    super(new BasicWebElementRetriever(driver));
   }
 
   @Override
