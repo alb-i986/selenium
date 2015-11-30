@@ -22,7 +22,6 @@ public class DisplayedWebElementRetriever extends WebElementRetrieverDecorator {
       throw new ElementNotVisibleException("Not visible: " + locator);
     }
     return element;
-
   }
 
   @Override
