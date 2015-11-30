@@ -22,8 +22,18 @@ public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
   private static final Logger logger = Logger.getLogger(WebElementRetrieverHandlingIframes.class.getName());
 
   private final WebDriver driver;
+  private final WebElementRetriever retriever;
 
+  public WebElementRetrieverHandlingIframes(WebElementRetriever lowLevelRetriever, WebDriver driver) {
+    this.retriever = lowLevelRetriever;
+    this.driver = driver;
+  }
+
+  /**
+   * By default, uses {@link BasicWebElementRetriever} as the underlying retriever to find element on an iframe.
+   */
   public WebElementRetrieverHandlingIframes(WebDriver driver) {
+    this.retriever = new BasicWebElementRetriever(driver);
     this.driver = driver;
   }
 
@@ -32,7 +42,7 @@ public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
     driver.switchTo().defaultContent(); // make sure we are on the root iframe
 
     try {
-      return driver.findElement(by);
+      return retriever.findElement(by);
     } catch (NoSuchElementException e) {
       Optional<WebElement> optional = searchInIframesRecursively(by);
       if (!optional.isPresent()) {
@@ -54,7 +64,7 @@ public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
       }
 
       try {
-        return Optional.of(driver.findElement(by));
+        return Optional.of(retriever.findElement(by));
       } catch (NoSuchElementException e) {
         Optional<WebElement> optional = searchInIframesRecursively(by);
         if (optional.isPresent()) {
