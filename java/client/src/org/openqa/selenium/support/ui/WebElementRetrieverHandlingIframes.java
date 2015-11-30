@@ -17,23 +17,17 @@ import java.util.logging.Logger;
  *
  * Not caching: each call to {@link #findElement(By)} triggers a fresh scan of the frames.
  */
-public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
+public class WebElementRetrieverHandlingIframes extends WebElementRetrieverDecorator {
 
   private static final Logger logger = Logger.getLogger(WebElementRetrieverHandlingIframes.class.getName());
 
   private final WebDriver driver;
-  private final WebElementRetriever retriever;
-
-  public WebElementRetrieverHandlingIframes(WebElementRetriever lowLevelRetriever, WebDriver driver) {
-    this.retriever = lowLevelRetriever;
-    this.driver = driver;
-  }
 
   /**
    * By default, uses {@link BasicWebElementRetriever} as the underlying retriever to find element on an iframe.
    */
   public WebElementRetrieverHandlingIframes(WebDriver driver) {
-    this.retriever = new BasicWebElementRetriever(driver);
+    super(new BasicWebElementRetriever(driver));
     this.driver = driver;
   }
 
@@ -42,7 +36,7 @@ public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
     driver.switchTo().defaultContent(); // make sure we are on the root iframe
 
     try {
-      return retriever.findElement(by);
+      return decoratedRetriever.findElement(by);
     } catch (NoSuchElementException e) {
       Optional<WebElement> optional = searchInIframesRecursively(by);
       if (!optional.isPresent()) {
@@ -64,7 +58,7 @@ public class WebElementRetrieverHandlingIframes implements WebElementRetriever {
       }
 
       try {
-        return Optional.of(retriever.findElement(by));
+        return Optional.of(decoratedRetriever.findElement(by));
       } catch (NoSuchElementException e) {
         Optional<WebElement> optional = searchInIframesRecursively(by);
         if (optional.isPresent()) {
