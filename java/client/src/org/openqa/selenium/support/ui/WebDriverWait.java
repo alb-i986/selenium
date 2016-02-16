@@ -17,6 +17,7 @@
 
 package org.openqa.selenium.support.ui;
 
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -33,7 +34,8 @@ public class WebDriverWait extends FluentWait<WebDriver> {
   private final WebDriver driver;
 
   /**
-   * Wait will ignore instances of NotFoundException that are encountered (thrown) by default in
+   * Wait will ignore instances of {@link NotFoundException} and
+   * {@link InvalidElementStateException} that are encountered (thrown) by default in
    * the 'until' condition, and immediately propagate all others.  You can add more to the ignore
    * list by calling ignoring(exceptions to add).
    *
@@ -46,7 +48,8 @@ public class WebDriverWait extends FluentWait<WebDriver> {
   }
 
   /**
-   * Wait will ignore instances of NotFoundException that are encountered (thrown) by default in
+   * Wait will ignore instances of {@link NotFoundException} and
+   * {@link InvalidElementStateException} that are encountered (thrown) by default in
    * the 'until' condition, and immediately propagate all others.  You can add more to the ignore
    * list by calling ignoring(exceptions to add).
    *
@@ -71,7 +74,7 @@ public class WebDriverWait extends FluentWait<WebDriver> {
     super(driver, clock, sleeper);
     withTimeout(timeOutInSeconds, TimeUnit.SECONDS);
     pollingEvery(sleepTimeOut, TimeUnit.MILLISECONDS);
-    ignoring(NotFoundException.class);
+    ignoring(NotFoundException.class, InvalidElementStateException.class);
     this.driver = driver;
   }
 

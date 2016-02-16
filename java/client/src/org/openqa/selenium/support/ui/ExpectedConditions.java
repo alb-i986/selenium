@@ -20,6 +20,7 @@ package org.openqa.selenium.support.ui;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchFrameException;
@@ -231,7 +232,7 @@ public class ExpectedConditions {
         List<WebElement> elements = findElements(locator, driver);
         for(WebElement element : elements){
           if(!element.isDisplayed()){
-            return null;
+            throw new ElementNotVisibleException(element.toString());
           }
         }
         return elements.size() > 0 ? elements : null;
@@ -259,7 +260,7 @@ public class ExpectedConditions {
       public List<WebElement> apply(WebDriver driver) {
         for(WebElement element : elements){
           if(!element.isDisplayed()){
-            return null;
+            throw new ElementNotVisibleException(element.toString());
           }
         }
         return elements.size() > 0 ? elements : null;
@@ -296,10 +297,14 @@ public class ExpectedConditions {
   }
 
   /**
-   * @return the given element if it is visible and has non-zero size, otherwise null.
+   * @return the given element if it is visible
+   * @throws ElementNotVisibleException if the given element is not displayed
    */
   private static WebElement elementIfVisible(WebElement element) {
-    return element.isDisplayed() ? element : null;
+    if (!element.isDisplayed()) {
+      throw new ElementNotVisibleException(element.toString());
+    }
+    return element;
   }
 
   /**
