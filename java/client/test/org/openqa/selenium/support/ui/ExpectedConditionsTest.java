@@ -46,6 +46,8 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -151,6 +153,7 @@ public class ExpectedConditionsTest {
 
   @Test
   public void waitingForVisibilityOfElement_elementBecomesVisible() throws InterruptedException {
+    wait.ignoring(InvalidElementStateException.class);
     when(mockClock.laterBy(1000L)).thenReturn(3000L);
     when(mockClock.isNowBefore(3000L)).thenReturn(true);
     when(mockElement.isDisplayed()).thenReturn(false, false, true);
@@ -162,6 +165,8 @@ public class ExpectedConditionsTest {
   @Test
   public void waitingForVisibilityOfElement_elementNeverBecomesVisible()
       throws InterruptedException {
+    wait.ignoring(InvalidElementStateException.class);
+
     when(mockClock.laterBy(1000L)).thenReturn(3000L);
     when(mockClock.isNowBefore(3000L)).thenReturn(true, false);
     when(mockElement.isDisplayed()).thenReturn(false, false);
@@ -169,7 +174,7 @@ public class ExpectedConditionsTest {
     try {
       wait.until(visibilityOf(mockElement));
       fail();
-    } catch (TimeoutException expected) {
+    } catch (ElementNotVisibleException expected) {
       // Do nothing.
     }
     verify(mockSleeper, times(1)).sleep(new Duration(250, TimeUnit.MILLISECONDS));
@@ -177,6 +182,8 @@ public class ExpectedConditionsTest {
 
   @Test
   public void waitingForVisibilityOfElementInverse_elementNotVisible() {
+    wait.ignoring(InvalidElementStateException.class);
+
     when(mockElement.isDisplayed()).thenReturn(false);
 
     assertTrue(wait.until(not(visibilityOf(mockElement))));
@@ -185,6 +192,8 @@ public class ExpectedConditionsTest {
 
   @Test
   public void waitingForVisibilityOfElementInverse_elementDisappears() throws InterruptedException {
+    wait.ignoring(InvalidElementStateException.class);
+
     when(mockClock.laterBy(1000L)).thenReturn(3000L);
     when(mockClock.isNowBefore(3000L)).thenReturn(true);
     when(mockElement.isDisplayed()).thenReturn(true, true, false);
@@ -288,6 +297,7 @@ public class ExpectedConditionsTest {
     List<WebElement> webElements = Lists.newArrayList(mockElement);
     String testSelector = "testSelector";
 
+    wait.ignoring(InvalidElementStateException.class);
     when(mockDriver.findElements(By.cssSelector(testSelector))).thenReturn(webElements);
     when(mockElement.isDisplayed()).thenReturn(false);
 
