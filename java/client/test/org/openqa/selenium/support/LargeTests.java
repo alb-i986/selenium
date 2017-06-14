@@ -22,13 +22,15 @@ import org.junit.runners.Suite;
 import org.openqa.selenium.support.pagefactory.UsingPageFactoryTest;
 import org.openqa.selenium.support.ui.SelectElementTest;
 import org.openqa.selenium.support.ui.SelectLargeTest;
+import org.openqa.selenium.support.ui.WindowHandlerTest;
 import org.openqa.selenium.testing.JUnit4TestBase;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     SelectLargeTest.class,
     UsingPageFactoryTest.class,
-    SelectElementTest.class
+    SelectElementTest.class,
+    WindowHandlerTest.class,
 })
 public class LargeTests {
 
